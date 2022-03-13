@@ -1,7 +1,6 @@
 package inputevent
 
 import (
-	"fmt"
 	"github.com/go-vgo/robotgo"
 	"time"
 )
@@ -36,7 +35,6 @@ func InitIE() {
 
 func EventsRun(events []Event) {
 	for _, e := range events {
-		fmt.Printf("%#v \n", e)
 		switch e.Method {
 		case "mouse":
 			switch e.Event {

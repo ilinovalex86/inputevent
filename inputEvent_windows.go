@@ -19,7 +19,6 @@ func InitIE() {
 func EventsRun(events []Event) {
 	for _, event := range events {
 		e := &event
-		//fmt.Printf("%#v \n", *e)
 		switch e.Method {
 		case "mouse":
 			switch e.Event {
