@@ -1,15 +1,8 @@
 package inputevent
 
 import (
-	"syscall"
+	wa "github.com/ilinovalex86/winapi"
 	"time"
-)
-
-var (
-	moduser32        = syscall.NewLazyDLL("user32.dll")
-	procMouseEvent   = moduser32.NewProc("mouse_event")
-	procSetCursorPos = moduser32.NewProc("SetCursorPos")
-	procKeyBd        = moduser32.NewProc("keybd_event")
 )
 
 func InitIE() {
@@ -17,24 +10,44 @@ func InitIE() {
 }
 
 func EventsRun(events []Event) {
-	for _, event := range events {
-		e := &event
+	m := wa.MouseEvent{}
+	k := wa.KeyboardEvent{}
+	for _, e := range events {
 		switch e.Method {
 		case "mouse":
 			switch e.Event {
 			case "move":
-				e.mouseMove()
+				m.Move(e.CorX, e.CorY)
 			case "left":
-				e.mouseLeft()
+				if e.Shift {
+					k.ShiftPress()
+				}
+				if e.Ctrl {
+					k.CtrlPress()
+				}
+				time.Sleep(time.Millisecond)
+				m.LClick(e.CorX, e.CorY)
+				time.Sleep(time.Millisecond)
+				if e.Shift {
+					k.ShiftRelease()
+				}
+				if e.Ctrl {
+					k.CtrlRelease()
+				}
 			case "right":
-				e.mouseRight()
+				m.RClick(e.CorX, e.CorY)
 			case "dbclick":
-				e.mouseDbClick()
+				m.DoubleClick(e.CorX, e.CorY)
 			case "drop":
-				e.mouseDrop()
+				m.Drop(e.CorX, e.CorY)
+			case "scrollUp":
+				m.WheelUp()
+			case "scrollDown":
+				m.WheelDown()
 			}
 		case "keyboard":
-			e.keyboard()
+			k = wa.KeyboardEvent{Ctrl: e.Ctrl, Shift: e.Shift, JavaScriptCode: e.Code}
+			k.Launching()
 		}
 		time.Sleep(time.Millisecond)
 	}
